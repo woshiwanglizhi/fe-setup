@@ -1,0 +1,28 @@
+// Zellij Layout: 开发工作区
+// 左边编辑器 + 右上终端 + 右下日志/监控
+// 加载方式: zellij --layout dev-layout.kdl
+
+layout {
+    pane split_direction="vertical" {
+        // 左边：主编辑区（占60%宽度）
+        pane size="60%" {
+            command "vim"
+            args "README.md"
+        }
+        // 右边：上下分两个面板
+        pane split_direction="horizontal" {
+            // 右上：终端（跑命令、git操作）
+            pane {
+                name "Terminal"
+            }
+            // 右下：日志或监控
+            pane {
+                name "Logs"
+            }
+        }
+    }
+    // 底部状态栏
+    pane size=1 borderless=true {
+        plugin location="compact-bar"
+    }
+}
