@@ -113,6 +113,9 @@ alias grep='rg'
 alias top='btop'
 alias lg='lazygit'
 
+# git shortcut: `g st`, `g ph`, `g cz`, ... — paired with git config alias.*
+alias g='git'
+
 # ─── pnpm ────────────────────────────────────────────────────────────
 export PNPM_HOME="$HOME/Library/pnpm"
 case ":$PATH:" in

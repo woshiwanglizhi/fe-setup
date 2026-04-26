@@ -151,6 +151,39 @@ bash <(curl -fsSL https://raw.githubusercontent.com/woshiwanglizhi/fe-setup/main
 | `grep` | `rg` |
 | `top` | `btop` |
 | `lg` | `lazygit` |
+| `g` | `git` (enables the `g xx` shortcuts below) |
+
+## Git Shortcuts (`g xx`)
+
+Deployed by `--accounts` (into `~/.gitconfig`). Two-layer: shell alias `g=git` + git's own `alias.*`. Usage: `g st`, `g ph`, `g cm "msg"`, `g cz`, ...
+
+| Shortcut | Expands To | Notes |
+|----------|-----------|-------|
+| `g st` | `git status` | |
+| `g sw` | `git switch` | |
+| `g co` | `git checkout` | |
+| `g br` | `git branch` | |
+| `g add` | `git add` | no alias needed — `g` just passes through |
+| `g cm "msg"` | `git commit -m "msg"` | quick commit |
+| `g ci` | `git commit` | opens editor |
+| `g amd` | `git commit --amend --no-edit` | amend HEAD, keep message |
+| `g cz` | `npx --yes cz --` → commitizen | interactive conventional-commit prompt |
+| `g di` | `git diff` | unstaged diff (uses `delta`) |
+| `g dc` | `git diff --cached` | staged diff |
+| `g lg` | `git log --graph --oneline --decorate --all` | pretty graph |
+| `g ll` | `git log --oneline -20` | last 20 commits |
+| `g ph` | `git push` | |
+| `g phf` | `git push --force-with-lease` | safe force push |
+| `g pl` | `git pull --ff-only` | no accidental merge commits |
+| `g ft` | `git fetch --all --prune` | fetch + drop stale remote branches |
+| `g sh` | `git show` | |
+| `g sta` | `git stash` | |
+| `g rb` | `git rebase` | |
+| `g rbi` | `git rebase -i` | interactive rebase |
+| `g unstage <file>` | `git reset HEAD -- <file>` | |
+| `g last` | `git log -1 HEAD` | show HEAD commit |
+
+> **Note:** `g cz` routes through `npx --yes cz --`, which works even without a global `commitizen` install (`--frontend` installs it for speed). Pair with `~/.czrc` → `cz-conventional-changelog` (also written by `--frontend`).
 
 ## fzf Keybindings
 

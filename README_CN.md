@@ -151,6 +151,39 @@ bash <(curl -fsSL https://raw.githubusercontent.com/woshiwanglizhi/fe-setup/main
 | `grep` | `rg` |
 | `top` | `btop` |
 | `lg` | `lazygit` |
+| `g` | `git`（开启下面的 `g xx` 缩写） |
+
+## Git 缩写（`g xx`）
+
+由 `--accounts` 部署到 `~/.gitconfig`。两层机制：shell 的 `alias g=git` + git 自己的 `alias.*`。用法：`g st`、`g ph`、`g cm "msg"`、`g cz`、...
+
+| 缩写 | 展开为 | 说明 |
+|------|--------|------|
+| `g st` | `git status` | |
+| `g sw` | `git switch` | |
+| `g co` | `git checkout` | |
+| `g br` | `git branch` | |
+| `g add` | `git add` | 不需要 alias —— `g` 直接透传 |
+| `g cm "msg"` | `git commit -m "msg"` | 快速提交 |
+| `g ci` | `git commit` | 打开编辑器写信息 |
+| `g amd` | `git commit --amend --no-edit` | 改入 HEAD，不改信息 |
+| `g cz` | `npx --yes cz --` → commitizen | 交互式规范化 commit |
+| `g di` | `git diff` | 未 stage 的改动（走 `delta`） |
+| `g dc` | `git diff --cached` | 已 stage 的改动 |
+| `g lg` | `git log --graph --oneline --decorate --all` | 漂亮的图 |
+| `g ll` | `git log --oneline -20` | 最近 20 条 |
+| `g ph` | `git push` | |
+| `g phf` | `git push --force-with-lease` | 安全的 force push |
+| `g pl` | `git pull --ff-only` | 不产生意外 merge commit |
+| `g ft` | `git fetch --all --prune` | 拉取 + 清理过期远程分支 |
+| `g sh` | `git show` | |
+| `g sta` | `git stash` | |
+| `g rb` | `git rebase` | |
+| `g rbi` | `git rebase -i` | 交互式 rebase |
+| `g unstage <file>` | `git reset HEAD -- <file>` | 取消 stage |
+| `g last` | `git log -1 HEAD` | 查看 HEAD |
+
+> **说明：** `g cz` 走 `npx --yes cz --`，即使没全局装 commitizen 也能用（`--frontend` 会帮你装上加速）。搭配 `~/.czrc` → `cz-conventional-changelog`（也是 `--frontend` 写入的）。
 
 ## fzf 快捷键
 

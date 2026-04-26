@@ -17,8 +17,9 @@
 #
 # Optional macOS-only extensions (opt-in, disabled by default):
 #   --frontend    Install frontend CLI + GUI apps
-#                 (pnpm / yarn / bun / gh / mkcert / nss + rectangle / keka / obsidian
-#                  + google-chrome / cursor / visual-studio-code / arc when absent)
+#                 (pnpm / yarn / bun / gh / mkcert / nss / commitizen + ~/.czrc
+#                  + rectangle / keka / obsidian + google-chrome / cursor /
+#                  visual-studio-code / arc when absent)
 #   --ai          Clone + build OpenClaw (https://github.com/maoruiQa/open-claw-code)
 #                 into ~/tools/open-claw
 #   --accounts    Configure git identity + generate SSH ed25519 key + ssh-agent keychain
@@ -1165,6 +1166,8 @@ if status is-interactive
     abbr -a top "btop"
     abbr -a lg "lazygit"
     abbr -a cd "z"
+    # git shortcut: `g st`, `g ph`, `g cz`, ... — paired with git config alias.*
+    abbr -a g "git"
 end
 ABBREOF
         success "Fish abbreviations added to config.fish"
@@ -1288,6 +1291,31 @@ if $INSTALL_FRONTEND && [[ "$OS" == "macos" ]]; then
             success "$pkg installed"
         fi
     done
+
+    # Commitizen (`cz`) — pairs with the `g cz` git alias for interactive
+    # conventional-commit prompts. cz-conventional-changelog is the default
+    # adapter referenced by ~/.czrc.
+    if has_cmd cz || has_cmd git-cz; then
+        success "commitizen already installed"
+    elif has_cmd npm; then
+        info "Installing commitizen + cz-conventional-changelog globally via npm..."
+        run_cmd npm i -g commitizen cz-conventional-changelog
+        success "commitizen installed"
+    else
+        warn "npm not found — skipping commitizen. Re-run after Step 7 finished."
+    fi
+
+    # ~/.czrc tells commitizen which adapter to use. Safe to overwrite the
+    # file only when it does not exist — we don't want to stomp on a user's
+    # custom adapter (e.g. cz-customizable, @commitlint/cz-commitlint).
+    if [[ -f "$HOME/.czrc" ]]; then
+        success "$HOME/.czrc already exists (leaving user adapter config alone)"
+    elif $DRY_RUN; then
+        echo -e "${YELLOW}[DRY-RUN]${NC} write $HOME/.czrc (cz-conventional-changelog)"
+    else
+        printf '{ "path": "cz-conventional-changelog" }\n' > "$HOME/.czrc"
+        success "$HOME/.czrc written (cz-conventional-changelog)"
+    fi
 fi
 
 # ─── Step 11: GUI Apps (--frontend) ─────────────────────────────────
@@ -1595,6 +1623,45 @@ if has_cmd delta || $DRY_RUN; then
     run_cmd git config --global diff.colorMoved default
     success "git-delta configured"
 fi
+
+# ─── Git aliases (short subcommands for `g st`, `g ph`, ...) ────────
+# Paired with the shell alias `g=git` shipped in configs/.zshrc and the
+# `abbr -a g git` written into ~/.config/fish/config.fish above. Together
+# they let you type things like `g st`, `g add .`, `g cm "msg"`, `g ph`.
+info "Configuring git aliases (~/.gitconfig)..."
+# shortcut | expansion  —  keep both halves together on one line so the
+# list stays greppable. `!` prefix means "run this shell command, don't
+# treat it as a git subcommand".
+GIT_ALIASES=(
+    "st|status"
+    "sw|switch"
+    "co|checkout"
+    "br|branch"
+    "cm|commit -m"
+    "ci|commit"
+    "amd|commit --amend --no-edit"
+    "di|diff"
+    "dc|diff --cached"
+    "lg|log --graph --oneline --decorate --all"
+    "ll|log --oneline -20"
+    "ph|push"
+    "phf|push --force-with-lease"
+    "pl|pull --ff-only"
+    "ft|fetch --all --prune"
+    "sh|show"
+    "sta|stash"
+    "rb|rebase"
+    "rbi|rebase -i"
+    "unstage|reset HEAD --"
+    "last|log -1 HEAD"
+    "cz|!npx --yes cz --"
+)
+for pair in "${GIT_ALIASES[@]}"; do
+    short="${pair%%|*}"
+    full="${pair#*|}"
+    run_cmd git config --global "alias.${short}" "${full}"
+done
+success "Git aliases configured (${#GIT_ALIASES[@]} shortcuts — try: g st / g ph / g cz)"
 
 # ─── Done! ───────────────────────────────────────────────────────────
 echo ""
